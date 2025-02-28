@@ -345,7 +345,7 @@ app.post("/accept_friendship",(req,res)=>{
 app.post("/delete_friend",(req,res)=>{
     const username1=req.body.username1;
     const username2=req.body.username2;
-    db.query("DELETE FROM friends WHERE username1=? AND username2=?",[username1,username2],(err,result)=>{
+    db.query("DELETE FROM friends WHERE (username1 = ? AND username2 = ?) OR (username1 = ? AND username2 = ?)",[username1,username2,username2,username1],(err,result)=>{
         if(err)
         {
             return res.status(500).json({ error: "Database error" });

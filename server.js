@@ -66,7 +66,7 @@ const storage = multer.diskStorage({
     }
   
    
-    const fileUrl = `http://localhost:8081/uploads/${req.file.filename}`;
+    const fileUrl = `http://av-drones-react-backend-production.up.railway.app/uploads/${req.file.filename}`;
     
    
     res.json({ url: fileUrl });
@@ -531,7 +531,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(8081, () => {
-    console.log('Backend server is running on http://localhost:8081');
+    console.log('Backend server is running on http://av-drones-react-backend-production.up.railway.app');
 });
 
 

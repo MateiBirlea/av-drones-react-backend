@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from "express";
 import mysql from 'mysql2';
 import cors from "cors";  
@@ -7,6 +9,9 @@ import { Server } from "socket.io";
 import { fileURLToPath } from 'url';
 import http from "http";
 import crypto from 'node:crypto';
+
+
+
 
 const app = express();
 function hashPassword(password) {
@@ -31,11 +36,16 @@ const uploadsDir = path.join(__dirname, 'uploads');
 app.use('/uploads', express.static(uploadsDir));
 
 
-const db = mysql.createConnection({
-    user: "root",
-    host: "localhost",
-    password: "stefanmr",
-    database: "d_site",
+
+const dbUrl = "mysql://root:bNURGAvuZNoGvTjbDauPzWZedJFbauEG@yamanote.proxy.rlwy.net:13117/railway";
+
+const db = mysql.createConnection(dbUrl);
+db.connect(err => {
+    if (err) {
+        console.error(" Database connection failed: " + err.stack);
+        return;
+    }
+    console.log(" Connected to Railway MySQL!");
 });
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

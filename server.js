@@ -36,9 +36,11 @@ const uploadsDir = path.join(__dirname, 'uploads');
 app.use('/uploads', express.static(uploadsDir));
 
 
-const dbUrl = "mysql://root:bNURGAvuZNoGvTjbDauPzWZedJFbauEG@yamanote.proxy.rlwy.net:13117/railway";
+console.log("Database URL:", process.env.DATABASE_URL);
 
-const db = mysql.createConnection(dbUrl);
+
+
+const db = mysql.createConnection(process.env.DATABASE_URL);
 
 db.connect(err => {
     if (err) {

@@ -9,7 +9,7 @@ import { Server } from "socket.io";
 import { fileURLToPath } from 'url';
 import http from "http";
 import crypto from 'node:crypto';
-
+import axios from 'axios';
 
 
 
@@ -40,15 +40,22 @@ console.log("Database URL:", process.env.DATABASE_URL);
 
 
 
-const db = mysql.createConnection(process.env.DATABASE_URL);
+const db = mysql.createPool({
+    uri: process.env.DATABASE_URL, 
+    waitForConnections: true,
+    connectionLimit: 10, 
+    queueLimit: 0
+  });
+  
 
-db.connect(err => {
+  db.getConnection((err, connection) => {
     if (err) {
-        console.error(" Database connection failed: " + err.stack);
-        return;
+      console.error(" Database connection failed:", err);
+    } else {
+      console.log("✅ Connected to MySQL database!");
+      connection.release(); 
     }
-    console.log(" Connected to Railway MySQL!");
-});
+  });
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, uploadsDir); 
@@ -529,13 +536,17 @@ app.use((err, req, res, next) => {
     console.error("Unhandled Error:", err);  
     res.status(500).json({ error: "Something went wrong." });
 });
-
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+  });
+  
+  setInterval(() => {
+    axios.get('https://av-drones-react-backend-production.up.railway.app/health') 
+      .then(() => console.log(' Keep-alive ping sent'))
+      .catch(err => console.error(' Keep-alive failed:', err.message));
+  }, 15000);
 app.listen(8081, () => {
     console.log('Backend server is running on http://av-drones-react-backend-production.up.railway.app');
-});
-db.ping((err) => {
-    if (err) console.error("❌ MySQL connection lost:", err);
-    else console.log("✅ MySQL is still connected.");
 });
 
 
